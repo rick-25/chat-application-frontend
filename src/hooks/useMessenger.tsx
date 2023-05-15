@@ -10,10 +10,16 @@ import { Socket, io } from "socket.io-client"
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8001'
 
+interface MessageI {
+    from: string;
+    to: string;
+    data: string;
+}
+
 interface MessengerContextProps {
   peers: string[]
   isConnected: boolean
-  messages: Map<string, string[]>
+  messages: Map<string, MessageI[]>
   sendMessage: (to: string, data: string) => void 
   connectSocket: (token: string, email: string) => void
 }
@@ -36,10 +42,16 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false)
     const [peers, setPeers] = useState<string[]>([])
-    const [messages, setMessages] = useState<Map<string, string[]>>(new Map());
+    const [messages, setMessages] = useState<Map<string, MessageI[]>>(new Map());
 
     const sendMessage =  useCallback((to: string, data: string) => {
         socket?.emit('msg', { to, data })
+        setMessages(msg => {
+            return new Map(msg.set(
+                to, 
+                [...(msg.get(to) || []), { to, from: email, data}]
+            ))
+        })
     }, [socket])
 
     const connectSocket = useCallback((token: string, email: string) => {
@@ -70,11 +82,11 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
             setPeers((peers_data as string[]).filter(s => s !== email))
         }
 
-        function onMessage(payload: { from: string, data: string }) {
+        function onMessage(payload: { to: string, from: string, data: string }) {
             setMessages(msg => {
                 return new Map(msg.set(
                     payload.from, 
-                    [...(msg.get(payload.from) || []), payload.data]
+                    [...(msg.get(payload.from) || []), payload]
                 ))
             })
         }
