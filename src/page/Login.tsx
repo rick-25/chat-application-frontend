@@ -14,7 +14,7 @@ const Login: React.FC = () => {
             headers: {
                 "Content-Type": "application/json",
             }
-       })
+        })
        const token = (await res.json()).token
 
        localStorage.setItem('token', token)
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
                 onSubmit={async (e) => {
                     e.preventDefault()
                     const token = await getToken(email, password)
-                    connectSocket(token)
+                    connectSocket(token, email)
                 }}
                 className="flex flex-col gap-5 p-5 w-[500px] border border-black shadow-xl rounded-md"
             >

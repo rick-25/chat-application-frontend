@@ -15,14 +15,14 @@ interface MessengerContextProps {
   isConnected: boolean
   messages: Map<string, string[]>
   sendMessage: (to: string, data: string) => void 
-  connectSocket: (token: string) => void
+  connectSocket: (token: string, email: string) => void
 }
 
 const MessengerContext = createContext<MessengerContextProps>({
     peers: [],
     isConnected: false,
     messages: new Map(),
-    connectSocket: (token) => {},
+    connectSocket: (token, email) => {},
     sendMessage: (to, data) => {},
 })
 
@@ -31,6 +31,8 @@ interface MessengerProviderProps {
 }
 
 function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
+
+    const [email, setEmail] = useState('')
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false)
     const [peers, setPeers] = useState<string[]>([])
@@ -40,12 +42,13 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
         socket?.emit('msg', { to, data })
     }, [socket])
 
-    const connectSocket = useCallback((token: string) => {
+    const connectSocket = useCallback((token: string, email: string) => {
         const socket = io(SOCKET_URL, { 
             transports: ["websocket", "polling"],
             auth: { token }
         });
         setSocket(socket)
+        setEmail(email)
     }, [])
 
     const value = useMemo(
@@ -64,11 +67,10 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
 
         function onRecivePeers(peers: string) {
             const peers_data = JSON.parse(peers)
-            setPeers((peers_data as string[]).filter(s => s !== socket?.id))
+            setPeers((peers_data as string[]).filter(s => s !== email))
         }
 
         function onMessage(payload: { from: string, data: string }) {
-            console.log('inside message handler!!');
             setMessages(msg => {
                 return new Map(msg.set(
                     payload.from, 
