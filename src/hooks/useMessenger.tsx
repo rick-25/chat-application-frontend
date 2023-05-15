@@ -1,7 +1,30 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSocket } from '../context/socket'
 
-export const useMessenger = () => {
+
+import { createContext, useContext, useMemo, useState, Dispatch, SetStateAction } from "react"
+
+interface MessengerContextProps {
+  peers: string[]
+  isConnected: boolean
+  messages: Map<string, string[]>
+  sendMessage: (to: string, data: string) => void 
+  connectSocket: () => void
+}
+
+const MessengerContext = createContext<MessengerContextProps>({
+    peers: [],
+    isConnected: false,
+    messages: new Map(),
+    connectSocket: () => {},
+    sendMessage: (to, data) => {},
+})
+
+interface MessengerProviderProps {
+  children: React.ReactNode
+}
+
+function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     const { socket } = useSocket()
     const [isConnected, setIsConnected] = useState(socket.connected)
     const [peers, setPeers] = useState<string[]>([])
@@ -9,11 +32,18 @@ export const useMessenger = () => {
 
     const sendMessage =  useCallback((to: string, data: string) => {
         socket.emit('msg', { to, data })
-    }, [])
+    }, [socket])
+
+    const connectSocket = useCallback(() => {
+        socket.connect()
+    }, [socket])
+
+    const value = useMemo(
+        () => ({ messages, sendMessage, isConnected, peers, connectSocket }), 
+        [messages, peers, isConnected, sendMessage, connectSocket]
+    )
 
     useEffect(() => {
-        socket.connect();
-
         function onConnect() {
             setIsConnected(true);
         }
@@ -48,14 +78,13 @@ export const useMessenger = () => {
             socket.off('peers', onRecivePeers)
             socket.off('msg', onMessage)
         };
-    }, []);
+    }, [socket]);
 
-    return {
-        peers,
-        isConnected,
-        messages,
-        sendMessage
-    }
+  return <MessengerContext.Provider value={value}>{children}</MessengerContext.Provider>
 }
 
-export default useMessenger
+const MessengerConsumer = MessengerContext.Consumer
+
+const useMessenger = () => useContext(MessengerContext)
+
+export { MessengerProvider, MessengerConsumer, useMessenger }

@@ -1,5 +1,6 @@
 import { useState } from "react"
-import useMessenger from '../hooks/useMessenger'
+import { useMessenger } from '../hooks/useMessenger'
+import { Navigate } from "react-router-dom";
 
 function Home() {
   const { peers, messages, sendMessage, isConnected } = useMessenger()
@@ -10,6 +11,9 @@ function Home() {
 
   return (
     <div>
+      {!isConnected && (
+        <Navigate to="/login" replace />
+      )}
       {isConnected ? 'Connected!' : 'Not Connected!'} 
         {peers.map(peer => (
           <button 

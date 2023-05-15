@@ -1,12 +1,17 @@
 import React, { useContext, useEffect } from "react"
-import useMessenger from "../hooks/useMessenger"
+import { Navigate } from "react-router-dom"
+import { useMessenger } from "../hooks/useMessenger"
 
 const Login: React.FC = () => {
-    const { messages } = useMessenger()
-    console.log(messages);
+    const { connectSocket, isConnected } = useMessenger()
     return (
         <div>
-            Login page
+            {isConnected && (
+                <Navigate to={"/"} replace={true}/>
+            )}
+            <button onClick={() => {
+                connectSocket()
+            }}>Connect!</button>
         </div>
     )
 }
