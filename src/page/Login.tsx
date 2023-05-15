@@ -31,6 +31,7 @@ const Login: React.FC = () => {
                 onSubmit={async (e) => {
                     e.preventDefault()
                     const token = await getToken(email, password)
+                    connectSocket(token)
                 }}
                 className="flex flex-col gap-5 p-5 w-[500px] border border-black shadow-xl rounded-md"
             >
