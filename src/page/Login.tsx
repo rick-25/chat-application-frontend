@@ -7,6 +7,10 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    useEffect(() => {
+        localStorage.removeItem('token')
+    }, [])
+
     const getToken = async (email: string, password: string) => {
         const res = await fetch('http://localhost:8001/auth/signup', {
             method: 'post',
@@ -49,7 +53,7 @@ const Login: React.FC = () => {
                     placeholder="password" 
                     className="border-2 border-black p-1 px-2 text-gray-600 rounded-md"
                 />
-                <button type="submit" className="bg-black text-white rounded-md p-1">Connect!</button>
+                <button type="submit" className="bg-black text-white rounded-md p-1">Signup / Login</button>
             </form>
         </div>
     )

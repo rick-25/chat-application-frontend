@@ -43,15 +43,14 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false)
     const [peers, setPeers] = useState<string[]>([])
-    const [messages, setMessages] = useState<MessageI[]>([]);
 
-    const { messages: testData } = useMessage()
+    const { messages, messageMutate } = useMessage()
 
     console.log(messages);
 
     const sendMessage =  useCallback((to: string, data: string) => {
         socket?.emit('msg', { to, data })
-        setMessages(msg => [...msg, { to, from: email, data }])
+        messageMutate([...(messages || []), { to, from: email, data }])
     }, [socket])
 
     const connectSocket = useCallback((token: string, email: string) => {
@@ -64,7 +63,7 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     }, [])
 
     const value = useMemo(
-        () => ({ messages, sendMessage, isConnected, peers, connectSocket }), 
+        () => ({ messages: messages || [], sendMessage, isConnected, peers, connectSocket }), 
         [messages, peers, isConnected, sendMessage, connectSocket]
     )
 
@@ -83,7 +82,7 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
         }
 
         function onMessage(payload: { to: string, from: string, data: string }) {
-            setMessages(msg => [...msg, payload])
+            messageMutate([...(messages || []), payload])
         }
 
         socket?.on('connect', onConnect);
