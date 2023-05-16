@@ -7,10 +7,11 @@ import React, {
     useState 
 } from "react"
 import { Socket, io } from "socket.io-client"
+import useMessage from './useMessage'
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8001'
 
-interface MessageI {
+export interface MessageI {
     from: string;
     to: string;
     data: string;
@@ -19,7 +20,7 @@ interface MessageI {
 interface MessengerContextProps {
   peers: string[]
   isConnected: boolean
-  messages: Map<string, MessageI[]>
+  messages: MessageI[]
   sendMessage: (to: string, data: string) => void 
   connectSocket: (token: string, email: string) => void
 }
@@ -27,7 +28,7 @@ interface MessengerContextProps {
 const MessengerContext = createContext<MessengerContextProps>({
     peers: [],
     isConnected: false,
-    messages: new Map(),
+    messages: [],
     connectSocket: (token, email) => {},
     sendMessage: (to, data) => {},
 })
@@ -42,16 +43,15 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false)
     const [peers, setPeers] = useState<string[]>([])
-    const [messages, setMessages] = useState<Map<string, MessageI[]>>(new Map());
+    const [messages, setMessages] = useState<MessageI[]>([]);
+
+    const { messages: testData } = useMessage()
+
+    console.log(messages);
 
     const sendMessage =  useCallback((to: string, data: string) => {
         socket?.emit('msg', { to, data })
-        setMessages(msg => {
-            return new Map(msg.set(
-                to, 
-                [...(msg.get(to) || []), { to, from: email, data}]
-            ))
-        })
+        setMessages(msg => [...msg, { to, from: email, data }])
     }, [socket])
 
     const connectSocket = useCallback((token: string, email: string) => {
@@ -83,12 +83,7 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
         }
 
         function onMessage(payload: { to: string, from: string, data: string }) {
-            setMessages(msg => {
-                return new Map(msg.set(
-                    payload.from, 
-                    [...(msg.get(payload.from) || []), payload]
-                ))
-            })
+            setMessages(msg => [...msg, payload])
         }
 
         socket?.on('connect', onConnect);

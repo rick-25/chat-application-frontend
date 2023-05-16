@@ -3,11 +3,9 @@ import { useMessenger } from '../hooks/useMessenger'
 import { Navigate } from "react-router-dom";
 
 function Home() {
-  const { peers, messages, sendMessage, isConnected } = useMessenger()
+  const { peers, sendMessage, isConnected } = useMessenger()
   const [activePeer, setActivePeer] = useState('');
   const [data, setData] = useState('');
-
-  console.log(messages);
 
   return (
     <div>
