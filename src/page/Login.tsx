@@ -19,11 +19,17 @@ const Login: React.FC = () => {
                 "Content-Type": "application/json",
             }
         })
-       const token = (await res.json()).token
 
-       localStorage.setItem('token', token)
+        if(res.status === 401) {
+            alert('Invalid credentials')
+            return null
+        }
 
-       return token
+        const token = (await res.json()).token
+
+        localStorage.setItem('token', token)
+
+        return token
     }
 
     return (
@@ -35,7 +41,7 @@ const Login: React.FC = () => {
                 onSubmit={async (e) => {
                     e.preventDefault()
                     const token = await getToken(email, password)
-                    connectSocket(token, email)
+                    if(token) connectSocket(token, email)
                 }}
                 className="flex flex-col gap-5 p-5 w-[500px] border border-dark shadow-xl rounded-md"
             >
