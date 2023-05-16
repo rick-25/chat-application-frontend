@@ -23,6 +23,7 @@ interface MessengerContextProps {
   messages: MessageI[]
   sendMessage: (to: string, data: string) => void 
   connectSocket: (token: string, email: string) => void
+  user: string
 }
 
 const MessengerContext = createContext<MessengerContextProps>({
@@ -31,6 +32,7 @@ const MessengerContext = createContext<MessengerContextProps>({
     messages: [],
     connectSocket: (token, email) => {},
     sendMessage: (to, data) => {},
+    user: ''
 })
 
 interface MessengerProviderProps {
@@ -45,8 +47,6 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     const [peers, setPeers] = useState<string[]>([])
 
     const { messages, messageMutate } = useMessage()
-
-    console.log(messages);
 
     const sendMessage =  useCallback((to: string, data: string) => {
         socket?.emit('msg', { to, data })
@@ -63,8 +63,14 @@ function MessengerProvider({ children }: MessengerProviderProps): JSX.Element {
     }, [])
 
     const value = useMemo(
-        () => ({ messages: messages || [], sendMessage, isConnected, peers, connectSocket }), 
-        [messages, peers, isConnected, sendMessage, connectSocket]
+        () => ({ messages: messages || [], 
+            sendMessage, 
+            isConnected, 
+            peers, 
+            connectSocket,
+            user: email
+        }), 
+        [messages, peers, isConnected, sendMessage, connectSocket, email]
     )
 
     useEffect(() => {
