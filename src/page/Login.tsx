@@ -37,23 +37,23 @@ const Login: React.FC = () => {
                     const token = await getToken(email, password)
                     connectSocket(token, email)
                 }}
-                className="flex flex-col gap-5 p-5 w-[500px] border border-black shadow-xl rounded-md"
+                className="flex flex-col gap-5 p-5 w-[500px] border border-dark shadow-xl rounded-md"
             >
                 <input 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
                     type="email" 
                     placeholder="email" 
-                    className="border-2 border-black p-1 px-2 text-gray-600 rounded-md"
+                    className="border-2 border-dark p-1 px-2 text-gray-600 rounded-md"
                 />
                 <input 
                     value={password} 
                     onChange={e => setPassword(e.target.value)} 
                     type="password" 
                     placeholder="password" 
-                    className="border-2 border-black p-1 px-2 text-gray-600 rounded-md"
+                    className="border-2 border-dark p-1 px-2 text-gray-600 rounded-md"
                 />
-                <button type="submit" className="bg-black text-white rounded-md p-1">Signup / Login</button>
+                <button type="submit" className="bg-dark text-white rounded-md p-1">Signup / Login</button>
             </form>
         </div>
     )
