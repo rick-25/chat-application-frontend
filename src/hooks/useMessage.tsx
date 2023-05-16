@@ -12,7 +12,9 @@ const fetcher = (url: string) =>
     .then(res => res.json())
 
 export default function useMessage() {
-    const { data, mutate, isLoading, error, isValidating } = useSWR<MessageI[]>("http://localhost:8001/message", fetcher);
+    const shouldFetch = (localStorage.getItem("token") !== null) ? "http://localhost:8001/message" : null;
+
+    const { data, mutate, isLoading, error, isValidating } = useSWR<MessageI[]>(shouldFetch, fetcher);
 
     return {
         messages: data,
