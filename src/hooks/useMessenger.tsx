@@ -9,7 +9,7 @@ import React, {
 import { Socket, io } from "socket.io-client"
 import useMessage from './useMessage'
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8001'
+const SOCKET_URL = import.meta.env.VITE_API_URL
 
 export interface MessageI {
     from: string;

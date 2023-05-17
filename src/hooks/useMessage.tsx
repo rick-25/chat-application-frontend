@@ -12,7 +12,8 @@ const fetcher = (url: string) =>
     .then(res => res.json())
 
 export default function useMessage() {
-    const shouldFetch = (localStorage.getItem("token") !== null) ? "http://localhost:8001/message" : null;
+    const URL = import.meta.env.VITE_API_URL;
+    const shouldFetch = (localStorage.getItem("token") !== null) ? `${URL}/message` : null;
 
     const { data, mutate, isLoading, error, isValidating } = useSWR<MessageI[]>(shouldFetch, fetcher);
 
