@@ -31,7 +31,7 @@ const ChatBox: React.FC = () => {
                 ))}
             </div>
             <div className="flex-1 flex flex-col">
-                <div className="flex flex-1 flex-col gap-2 p-3">
+                <div className="flex flex-1 flex-col gap-2 p-3 overflow-x-scroll no-scrollbar">
                     {getChat(selectedChat || '').map(chat => (
                         <div key={JSON.stringify(chat)} className={`w-full flex flex-row ${chat.from === user ? 'justify-end' : 'justify-start'}`}>
                             <p className="w-fit bg-dark text-white p-1 px-2 rounded-md text-sm">{chat.data}</p>
