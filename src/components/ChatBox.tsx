@@ -16,11 +16,11 @@ const ChatBox: React.FC = () => {
 
     return (
         <div className="flex flex-row min-w-[700px] h-[400px] border shadow-xl">
-            <div className="border w-1/4">
+            <div className="border w-fit">
                 {uniquePeers.map(peer => (
                     <div 
                         key={peer}
-                        className={`p-3 text-sm border hover:cursor-pointer flex flex-row justify-between items-center ${peer === selectedChat ? 'bg-dark text-white': 'bg-inherit text-inherit'}`}
+                        className={`p-3 text-sm border hover:cursor-pointer flex flex-row justify-between items-center gap-5 ${peer === selectedChat ? 'bg-dark text-white': 'bg-inherit text-inherit'}`}
                         onClick={() => setSelectedChat(peer)}
                     >
                         <p className="text-sm">{peer}</p>
