@@ -2,6 +2,6 @@
 
 Steps to run
 * `npm i`
-* `npm run start`
+* `npm run dev`
 
 #### Make sure to create .env file according to .env.example
